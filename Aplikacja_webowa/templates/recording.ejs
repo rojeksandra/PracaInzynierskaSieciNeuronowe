@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nagrywarka audio</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f9ff; /* Jasny niebieski tło */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #007BFF;
+            margin-bottom: 30px;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            background-color: #007BFF;
+            padding: 15px 40px;
+            z-index: 1000;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        nav ul li {
+            display: inline;
+            margin-left: 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .app-name {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            z-index: 9999;
+        }
+
+        .content {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        /* Styl dla nagrywarki */
+        .recording-container {
+            background-color: #ffffff;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .recording-container h2 {
+            color: #007BFF;
+            font-size: 1.8em;
+        }
+
+        .recording-container button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 15px;
+        }
+
+        .recording-container button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        .recording-container audio {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .status {
+            font-size: 1.1em;
+            color: #007BFF;
+        }
+
+        /* Styl dla przycisku pobierania */
+        .download-container {
+            margin-top: 20px;
+        }
+
+        .download-container a {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .download-container a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nazwa aplikacji w lewym górnym rogu -->
+    <div class="app-name">MOJA APLIKACJA</div>
+
+    <!-- Pasek nawigacyjny w prawym górnym rogu -->
+    <nav>
+        <ul>
+            <li><a href="/">Strona główna</a></li>
+            <li><a href="/record">Nagrywaj</a></li>
+            <li><a href="/main_page">?</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sekcja nagrywania -->
+    <div class="recording-container">
+        <h2>Nagrywarka dźwięku</h2>
+        <button id="startBtn">Rozpocznij nagrywanie</button>
+        <button id="stopBtn" disabled>Zatrzymaj nagrywanie</button>
+        <h3 class="status">Status: <span id="status">Oczekiwanie na rozpoczęcie nagrywania...</span></h3>
+        <audio id="audioPlayer" controls></audio>
+
+        <!-- Przycisk do pobierania pliku -->
+        <div class="download-container">
+            <a id="downloadBtn" href="#" download="nagranie.wav" style="display:none;">Pobierz nagranie</a>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('status');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Sprawdzenie, czy przeglądarka wspiera MediaRecorder
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            console.log('Przeglądarka wspiera nagrywanie audio.');
+        } else {
+            alert('Twoja przeglądarka nie wspiera nagrywania audio.');
+        }
+
+        // Rozpoczęcie nagrywania
+        startBtn.onclick = async function() {
+            if (isRecording) return;
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.onstart = () => {
+                status.textContent = 'Nagrywanie...';
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                isRecording = true;
+            };
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayer.src = audioUrl;
+                audioChunks = [];
+                status.textContent = 'Nagrywanie zakończone.';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                isRecording = false;
+
+                // Umożliwienie pobrania pliku
+                downloadBtn.style.display = 'inline-block';
+                downloadBtn.href = audioUrl;
+            };
+
+            mediaRecorder.start();
+        };
+
+        // Zatrzymanie nagrywania
+        stopBtn.onclick = function() {
+            if (!isRecording) return;
+
+            mediaRecorder.stop();
+        };
+    </script>
+
+</body>
+</html>

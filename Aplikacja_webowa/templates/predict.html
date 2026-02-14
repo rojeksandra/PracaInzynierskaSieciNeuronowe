@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Przewiduj emocje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #007BFF;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            background-color: #007BFF;
+            padding: 10px 30px;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .app-name {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: white;
+            z-index: 1001;
+        }
+
+        .content {
+            margin-top: 80px;
+            text-align: center;
+            width: 90%;
+            max-width: 700px;
+        }
+
+        .upload-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 550px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        input[type="file"] {
+            margin-top: 15px;
+            padding: 10px;
+            border: 2px solid #007BFF;
+            border-radius: 8px;
+            background-color: #f7f9fc;
+            font-size: 1.1em;
+            width: 100%;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            border-color: #0056b3;
+        }
+
+        input[type="submit"] {
+            margin-top: 15px;
+            padding: 12px 24px;
+            border: none;
+            background-color: #007BFF;
+            color: #ffffff;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 1.3em;
+            color: #333;
+            width: 100%;
+            max-width: 550px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .result-container h2 {
+            color: #007BFF;
+            font-weight: 600;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .predicted-emotion {
+            font-size: 2em;
+            font-weight: 600;
+            color: #007BFF;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        .audio-container {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .audio-container h2 {
+            color: #007BFF;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .audio-player audio {
+            width: 100%;
+            border-radius: 10px;
+            border: none;
+            background-color: #f7f9fc;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .audio-player audio::-webkit-media-controls-panel {
+            background-color: #007BFF;
+            border-radius: 10px;
+        }
+
+        .audio-player audio::-webkit-media-controls-play-button {
+            background-color: #f7f9fc;
+            border-radius: 50%;
+            padding: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .audio-player audio::-webkit-media-controls-play-button:hover {
+            background-color: #0056b3;
+        }
+
+        .audio-player audio::-webkit-media-controls-volume-slider {
+            background-color: #f7f9fc;
+            border-radius: 10px;
+            height: 5px;
+        }
+
+        .audio-player audio::-webkit-media-controls-volume-slider:focus {
+            background-color: #0056b3;
+        }
+
+        .audio-player audio::-webkit-media-controls-mute-button {
+            color: #ffffff;
+            background-color: #007BFF;
+        }
+
+        .audio-player audio::-webkit-media-controls-mute-button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            nav ul li a {
+                font-size: 0.9em;
+            }
+
+            .content {
+                width: 95%;
+            }
+
+            .upload-container {
+                padding: 20px;
+            }
+
+            .result-container {
+                font-size: 1.1em;
+            }
+
+            .predicted-emotion {
+                font-size: 1.8em;
+            }
+
+            .audio-container {
+                padding: 15px;
+            }
+
+            .audio-player audio {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-name">EmoLens</div>
+
+    <nav>
+        <ul>
+            <li><a href="/">Przewiduj emocje</a></li>
+            <li><a href="/record">Nagrywaj</a></li>
+            <li><a href="/instruction">?</a></li>
+        </ul>
+    </nav>
+
+    <div class="upload-container">
+        <h1>Odkryj emocje w dźwięku</h1>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".wav" required><br><br>
+            <input type="submit" value="Wyślij plik">
+        </form>
+        
+        {% if predicted_emotion %}
+            <div class="result-container">
+                <h2>Przewidywana emocja:</h2>
+                <p class="predicted-emotion">{{ predicted_emotion }}</p> 
+            </div>
+        {% endif %}
+        
+        {% if load_status %}
+            <p>{{ load_status }}</p>
+        {% endif %}
+        
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+
+        {% if file_path %}
+            <div class="audio-container">
+                <h2>Odtwarzanie przesłanego pliku:</h2>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="{{ file_path }}" type="audio/wav">
+                        Twoja przeglądarka nie wspiera odtwarzania audio.
+                    </audio>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
