@@ -14,7 +14,7 @@ Repozytorium zawiera wszystkie pliki stworzone podczas pracy nad projektem reali
 
 Aby uruchomić aplikację EmoLens na swoim komputerze, wystarczy sklonować repozytorium do wcześniej przygotowanego folderu, używając komendy:
 
-git clone "https://gitlab-stud.elka.pw.edu.pl/srojek/praca_inzynierska.git"
+git clone "https://github.com/rojeksandra/PracaInzynierskaSieciNeuronowe.git"
 
 
 Następnie przy użyciu środowiska programistycznego, np. Visual Studio Code, uruchomić plik `app.py` i wpisać w przeglądarkę adres:
@@ -49,7 +49,7 @@ To run the EmoLens application locally:
 
 1. Clone the repository into your selected directory using:
 
-git clone "https://gitlab-stud.elka.pw.edu.pl/srojek/praca_inzynierska.git"
+git clone "https://github.com/rojeksandra/PracaInzynierskaSieciNeuronowe.git"
 
 2. Open the project in your preferred development environment (e.g., Visual Studio Code).
 3. Run the `app.py` file.
